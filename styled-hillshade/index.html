@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Styled Hillshade</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <script>
+    var locationPath = window.location.href.replace(/\/[^/]+$/, "/")
+    var dojoConfig = {
+      paths: {
+        layers: locationPath + "layers"
+      }
+    };
+  </script>
+  <script src="https://js.arcgis.com/4.11/"></script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/widgets/LayerList",
+
+      "esri/layers/GroupLayer",
+      "esri/layers/TileLayer",
+
+      "layers/StyledHillshadeLayer"
+    ],
+    function(
+      Map, MapView, LayerList,
+      GroupLayer, TileLayer,
+      StyledHillshadeLayer
+    ) {
+
+      map = new Map({
+        basemap: {
+          portalItem: {
+            id: "3582b744bba84668b52a16b0b6942544"
+          }
+        },
+        layers: [
+          new GroupLayer({
+            title: "Layers",
+            visibilityMode: "exclusive",
+            layers: [
+              new TileLayer({
+                url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
+                title: "Regular Hillshade",
+                visible: false,
+                listMode: "hide-children"
+              }),
+              new StyledHillshadeLayer(),
+            ]
+          })
+        ]
+      });
+
+      view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: {
+          "x": -13310843.898366774,
+          "y": 4542957.616484096,
+          "spatialReference": {
+            "latestWkid": 3857,
+            "wkid": 102100
+          }
+        },
+        zoom: 14,
+        constraints: {
+          maxZoom: 14
+        }
+      });
+
+      var layerList = new LayerList({
+        view: view,
+      });
+
+      view.ui.add(layerList, "top-right");
+    });
+  </script>
+</body>
+
+</html>
